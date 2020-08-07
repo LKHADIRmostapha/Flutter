@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-FoodItemsList foodItemList = FoodItemsList(foodItems: [
+FoodItemsList foodItemList =  FoodItemsList(foodItems: [
   FoodItem(
     id: 1,
     title: "Beach BBQ Burger",
@@ -22,21 +22,21 @@ FoodItemsList foodItemList = FoodItemsList(foodItems: [
     title: "Supreme Pizza Burger",
     hotel: "Golf Course",
     price: 8.49,
-    imgUrl: "https://static.food2fork.com/burger53be.jpg",
+    imgUrl: "https://b.zmtcdn.com/data/pictures/chains/8/18427868/1269c190ab2f272599f8f08bc152974b.png",
   ),
   FoodItem(
     id: 4,
     title: "Chilly Cheeze Burger",
     hotel: "Las Vegas Hotel",
     price: 14.49,
-    imgUrl: "https://static.food2fork.com/36725137eb.jpg",
+    imgUrl: "https://b.zmtcdn.com/data/pictures/chains/8/18427868/1269c190ab2f272599f8f08bc152974b.png",
   ),
   FoodItem(
     id: 5,
     title: "Beach BBQ Burger",
     hotel: "Las Vegas Hotel",
     price: 14.49,
-    imgUrl: "https://static.food2fork.com/turkeyburger300x200ff84052e.jpg",
+    imgUrl: "https://b.zmtcdn.com/data/pictures/chains/8/18427868/1269c190ab2f272599f8f08bc152974b.png",
   ),
   FoodItem(
     id: 6,
