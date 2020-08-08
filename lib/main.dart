@@ -2,8 +2,10 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:food_cart_app/bloc/cartListBloc.dart';
 import 'package:food_cart_app/model/foodItem.dart';
-import 'model/foodItem.dart';
 
+import 'bloc/listStyleColorBloc.dart';
+import 'cart.dart';
+import 'model/foodItem.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,13 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      blocs: [
-        Bloc((i)=> CartListBloc())
-      ],
+      blocs: [Bloc((i) => CartListBloc()),
+    Bloc((i) => ColorBloc())],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Food Cart',
-
         home: MyHomePage(title: 'Food Cart'),
       ),
     );
@@ -31,42 +31,51 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Container(
-            child: ListView(
-              children: <Widget>[
-                FirstHalf(),
-                for (var foodItem in foodItemList.foodItems)
-                  ItemContainer(foodItem: foodItem)
-              ],
-            ),
-          )
-      )
-
-    );
+        body: SafeArea(
+            child: Container(
+      child: ListView(
+        children: <Widget>[
+          FirstHalf(),
+          for (var foodItem in foodItemList.foodItems)
+            ItemContainer(foodItem: foodItem)
+        ],
+      ),
+    )));
   }
 }
 
-class ItemContainer extends StatelessWidget{
+class ItemContainer extends StatelessWidget {
   final FoodItem foodItem;
+
   ItemContainer({this.foodItem});
+
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
+
+  addToCart(FoodItem foodItem) {
+    bloc.addToList(foodItem);
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return GestureDetector(
       onTap: () {
+        addToCart(foodItem);
 
+        final snackbar = SnackBar(
+          content: Text("${foodItem.title} added to the cart"),
+          duration: Duration(milliseconds: 550),
+        );
+        Scaffold.of(context).showSnackBar(snackbar);
       },
       child: Items(
         hotel: foodItem.hotel,
@@ -80,20 +89,18 @@ class ItemContainer extends StatelessWidget{
 }
 
 class Items extends StatelessWidget {
-
   final String hotel;
   final String itemName;
   final double itemPrice;
   final String imageUrl;
   final bool leftAligned;
 
-  Items({
-    @required this.hotel,
-    @required this.itemName,
-    @required this.itemPrice,
-    @required this.imageUrl,
-    @required this.leftAligned
-  });
+  Items(
+      {@required this.hotel,
+      @required this.itemName,
+      @required this.itemPrice,
+      @required this.imageUrl,
+      @required this.leftAligned});
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +120,7 @@ class Items extends StatelessWidget {
                 width: double.infinity,
                 height: 200,
                 decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                    BoxDecoration(borderRadius: BorderRadius.circular(10)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.horizontal(
                     left: leftAligned
@@ -129,7 +136,9 @@ class Items extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 30,),
+              SizedBox(
+                height: 30,
+              ),
               Container(
                 padding: EdgeInsets.only(
                   left: leftAligned ? 20 : 0,
@@ -138,48 +147,44 @@ class Items extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                        children: <Widget>[ Expanded(
-                          child: Text(
-                            itemName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 18
-                            ),
-                          ),
+                    Row(children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          itemName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 18),
                         ),
-                          Text(
-                            "\$$itemPrice",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ]
+                      ),
+                      Text(
+                        "\$$itemPrice",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ]),
+                    SizedBox(
+                      height: 10,
                     ),
-                    SizedBox(height: 10,),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: RichText(
                         text: TextSpan(
-                            style: TextStyle(
-                                color: Colors.black45,
-                                fontSize: 15
-                            ),
+                            style:
+                                TextStyle(color: Colors.black45, fontSize: 15),
                             children: [
                               TextSpan(text: "by "),
                               TextSpan(
                                   text: hotel,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
-                                  )
-                              )
-                            ]
-                        ),
+                                  ))
+                            ]),
                       ),
                     ),
-                    SizedBox(height: containerPadding,),
-
+                    SizedBox(
+                      height: containerPadding,
+                    ),
                   ],
                 ),
               )
@@ -191,9 +196,7 @@ class Items extends StatelessWidget {
   }
 }
 
-
-
-class FirstHalf extends StatelessWidget{
+class FirstHalf extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -202,21 +205,28 @@ class FirstHalf extends StatelessWidget{
       child: Column(
         children: <Widget>[
           CustomAppBar(),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           title(),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           searchBar(),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           categories(),
-          SizedBox(height: 30,),
-
+          SizedBox(
+            height: 30,
+          ),
         ],
       ),
     );
   }
 }
 
-Widget categories(){
+Widget categories() {
   return Container(
     height: 185,
     child: ListView(
@@ -257,7 +267,7 @@ Widget categories(){
   );
 }
 
-Widget searchBar(){
+Widget searchBar() {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: <Widget>[
@@ -265,7 +275,9 @@ Widget searchBar(){
         Icons.search,
         color: Colors.black45,
       ),
-      SizedBox(width: 20,),
+      SizedBox(
+        width: 20,
+      ),
       Expanded(
         child: TextField(
           decoration: InputDecoration(
@@ -273,39 +285,32 @@ Widget searchBar(){
               contentPadding: EdgeInsets.symmetric(vertical: 10),
               helperStyle: TextStyle(
                 color: Colors.black87,
-              )
-          ),
+              )),
         ),
       )
     ],
-
   );
 }
 
-Widget title(){
+Widget title() {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: <Widget>[
       Text(
         "Food",
-        style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 30
-        ),
+        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 30),
       ),
       Text(
         "Cart",
-        style: TextStyle(
-            fontWeight: FontWeight.w200,
-            fontSize: 30
-        ),
+        style: TextStyle(fontWeight: FontWeight.w200, fontSize: 30),
       )
     ],
   );
 }
 
-
 class CustomAppBar extends StatelessWidget {
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -315,15 +320,13 @@ class CustomAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Icon(Icons.menu),
-          Container(
-            margin: EdgeInsets.only(right: 30),
-            child: Text('0'),
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Colors.yellow[800],
-              borderRadius: BorderRadius.circular(50),
-
-            ),
+          StreamBuilder(
+            stream: bloc.ListStream,
+            builder: (context, snapshot) {
+              List<FoodItem> foodItems = snapshot.data;
+              int lenght = foodItems != null ? foodItems.length : 0;
+              return buildGestureDetector(lenght, context, foodItems);
+            },
           )
         ],
       ),
@@ -331,20 +334,33 @@ class CustomAppBar extends StatelessWidget {
   }
 }
 
+GestureDetector buildGestureDetector(
+    int length, BuildContext context, List<FoodItem> foodItems) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
+    },
+    child: Container(
+      margin: EdgeInsets.only(right: 30),
+      child: Text(length.toString()),
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+          color: Colors.yellow[800], borderRadius: BorderRadius.circular(50)),
+    ),
+  );
+}
 
 class CategoryListItem extends StatelessWidget {
-
   final IconData categoryIcon;
   final String categoryName;
   final int availability;
   final bool selected;
 
-  CategoryListItem({
-    @required this.categoryIcon,
-    @required this.categoryName,
-    @required this.availability,
-    @required this.selected
-  });
+  CategoryListItem(
+      {@required this.categoryIcon,
+      @required this.categoryName,
+      @required this.availability,
+      @required this.selected});
 
   @override
   Widget build(BuildContext context) {
@@ -362,11 +378,9 @@ class CategoryListItem extends StatelessWidget {
             BoxShadow(
                 color: Colors.grey[100],
                 blurRadius: 15,
-                offset: Offset(25,0),
-                spreadRadius: 5
-            )
-          ]
-      ),
+                offset: Offset(25, 0),
+                spreadRadius: 5)
+          ]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -378,21 +392,19 @@ class CategoryListItem extends StatelessWidget {
                 border: Border.all(
                   color: selected ? Colors.transparent : Colors.grey,
                   width: 1.5,
-                )
-            ),
+                )),
             child: Icon(
               categoryIcon,
               color: Colors.black,
               size: 30,
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Text(
             categoryName,
-            style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: Colors.black
-            ),
+            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.black),
           ),
           Container(
             margin: EdgeInsets.fromLTRB(0, 0, 0, 10),

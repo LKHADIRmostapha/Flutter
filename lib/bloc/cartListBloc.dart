@@ -22,7 +22,7 @@ class CartListBloc extends BlocBase{
     ListSink.add(provider.addToList(foodItem));
   }
 
-  removeromList(FoodItem foodItem){
+  removeFromList(FoodItem foodItem){
     ListSink.add(provider.removeFromList(foodItem));
   }
 
